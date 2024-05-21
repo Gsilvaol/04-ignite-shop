@@ -1,22 +1,29 @@
 import { ImageContainer, ProductContainer, ProductDetails } from "@/styles/pages/product"
-import { useRouter } from "next/router"
+import { GetStaticProps } from "next"
+import Stripe from "stripe";
+import { stripe } from "../../lib/stripe";
+import Image from "next/image";
 
-export default function Product() {
-    const { query } = useRouter()
+interface ProductProps {
+    product: {
+        id: string
+        name: string
+        imageUrl: string
+        price: string
+        description: string
+    }
+}
 
+export default function Product({ product }: ProductProps) {
     return (
         <ProductContainer>
             <ImageContainer>
-
+                <Image src={product.imageUrl} width={520} height={480} alt="" />
             </ImageContainer>
             <ProductDetails>
-                <h1>Camiseta x</h1>
-                <span>R$ 79,90</span>
-                <p>Esta camiseta é a definição de estilo despojado e moderno. Cada peça é única graças ao processo artesanal de tingimento. Feita de algodão 100% orgânico, esta camiseta não só é confortável e respirável, mas também sustentável.
-
-                    O design oversized proporciona um ajuste solto e casual, perfeito para qualquer ocasião, seja um passeio no parque ou um encontro com amigos. Combine-a com jeans rasgados para um visual streetwear ou com shorts para um look mais descontraído.
-
-                    Com acabamento de alta qualidade e costuras reforçadas, esta camiseta é feita para durar e ser uma peça-chave no seu guarda-roupa. Seja a estrela do seu próprio desfile de moda com esta camiseta que une conforto, estilo e sustentabilidade em uma só peça.</p>
+                <h1>{product.name}</h1>
+                <span>{product.price}</span>
+                <p>{product.description}</p>
                 <button>
                     Comprar agora
                 </button>
@@ -24,3 +31,30 @@ export default function Product() {
         </ProductContainer>
     )
 }
+
+export const getStaticProps: GetStaticProps<any, { id: string }> = async ({ params }) => {
+    const productId = params.id;
+
+    const product = await stripe.products.retrieve(productId, {
+        expand: ['default_price']
+    });
+
+    const price = product.default_price as Stripe.Price;
+
+    return {
+        props: {
+            product: {
+                id: product.id,
+                name: product.name,
+                imageUrl: product.images[0],
+                price: new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(price.unit_amount / 100),
+                description: product.description
+            }
+        },
+        revalidate: 60 * 60 * 1 // 1 hours
+    }
+}
+
