@@ -17,11 +17,11 @@ interface ProductProps {
 export const getStaticPaths: GetStaticPaths = async () => {
     return {
         paths: [
-            {
-                params: {  }
-            }
+            
+            { params: { id: '' } }  
+            
         ],
-        fallback: false,
+        fallback: 'blocking',
     }
 }
 
