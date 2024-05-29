@@ -16,17 +16,17 @@
 </p>
 <p align="center">
   <img alt="" 
-  src=".github/captura 2.png"   
+  src=".github/Captura 2.png"   
   width="100%">
 </p>
 <p align="center">
   <img alt="" 
-  src=".github/captura 3.png"   
+  src=".github/Captura 3.png"   
   width="100%">
 </p>
 <p align="center">
   <img alt="" 
-  src=".github/captura 4.png"   
+  src=".github/Captura 4.png"   
   width="100%">
 </p>
 
