@@ -1,5 +1,5 @@
-import { stripe } from "@/lib/stripe";
-import { NextApiRequest, NextApiResponse } from "next";
+import { stripe } from "../../lib/stripe";
+import { GetServerSideProps, NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { priceId } = req.body;
@@ -17,9 +17,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const cancelUrl = `${process.env.NEXT_URL}/`;
 
     const checkoutSession = await stripe.checkout.sessions.create({
-        success_url: successUrl,
-        cancel_url: cancelUrl,
         mode: 'subscription',
+        success_url: 'http://localhost:3000/sucess?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url: 'http://localhost:3000/',
         line_items: [
             {
                 price: priceId,
@@ -31,5 +31,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         checkoutUrl: checkoutSession.url,
     })
 }
-
 
